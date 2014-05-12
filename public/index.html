@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
+  <script src="scripts/vendor/jquery.velocity.min.js"></script>
+  <script src="scripts/vendor/lodash.min.js"></script>
+</head>
+<body>
+
+<style type="text/css">
+  * {
+    box-sizing: border-box
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .square {
+    background: rgba(241,231,103,1);
+    background-image: url(images/leferrari.jpg);
+  }
+</style>
+
+<script type="text/javascript">
+
+  var width_height = 50; // size of partitions
+  var image_dimensions = { width: 2560, height: 1440 }
+
+  var animations = {
+    widthHeight: {
+      width: 0,
+      height: 0
+    },
+    randishPosition: {
+      translateY: function(){ return Math.floor(Math.random() * width_height) },
+      translateX: function(){ return Math.floor(Math.random() * width_height) }
+    },
+    randishPositionMoar: {
+      translateY: function(){ return Math.floor((Math.random() * 100) * width_height) },
+      translateX: function(){ return Math.floor((Math.random() * 100) * width_height) }
+    },
+    scatterAndReturn: {
+      translateY: function(){ return (Math.random() < 0.5 ? -1 : 1) * Math.floor((Math.random() * 100) * width_height) },
+      translateX: function(){ return (Math.random() < 0.5 ? -1 : 1) * Math.floor((Math.random() * 100) * width_height) }
+    },
+    goForIt: {
+      translateX: function(){ return (Math.random() < 0.5 ? -1 : 1) * Math.floor((Math.random() * 10) * width_height) },
+      translateY: function(){ return (Math.random() < 0.5 ? -1 : 1) * Math.floor((Math.random() * 10) * width_height) },
+      translateZ: function(){ return (Math.random() < 0.5 ? -1 : 1) * Math.floor((Math.random() * 10) * width_height) },
+      rotateX: function(){ return (Math.random() < 0.5 ? -1 : 1) * Math.floor((Math.random() * 10) * width_height) },
+      rotateY: function(){ return (Math.random() < 0.5 ? -1 : 1) * Math.floor((Math.random() * 10) * width_height) },
+      rotateZ: function(){ return (Math.random() < 0.5 ? -1 : 1) * Math.floor((Math.random() * 10) * width_height) },
+      scale: function(){ return (Math.floor(Math.random() * 100)) + '%' },
+      opacity: function(){ return Math.floor(Math.random() * 10) / 10 }
+    }
+  }
+
+  
+  
+  var $targets = null;
+  var $pallete = null;
+
+  function buildSquares() {
+    var columns = _.range(Math.ceil($(window).width() / width_height));
+    var rows = _.range(Math.ceil($(window).height() / width_height));
+
+    _.each(rows, function(row, rowIndex){
+      _.each(columns, function(column, columnIndex){
+        var top = rowIndex * width_height;
+        var left = columnIndex * width_height;
+        var div = 
+        $pallete.append(
+          '<div class="square" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width_height + 'px; height: ' + width_height + 'px; background-color: #ccc; background-position: ' + (image_dimensions.width - left) + 'px ' + (image_dimensions.height - top) + 'px; "></div>')
+      })
+    })
+
+  }
+
+  function animate() {
+    $targets = $(".square");
+    $targets.velocity(
+      animations.goForIt,
+      {
+        duration: 1000,
+        easing: "ease-in-out",
+        queue: "",
+        begin: null,
+        complete: animate,
+        loop: 1,
+        delay: 0,
+        display: false,
+        mobileHA: true
+      }
+    )
+  }
+
+  function run() {
+    $pallete = $('#pallete');;
+    buildSquares();
+    animate();
+  }
+
+  $(document).ready(function(){
+    $(window).resize(function() {
+      if ($targets) { 
+        $targets.velocity("stop");
+        $targets = null;
+        $pallete.empty();
+      }
+      run();
+    });
+    run();
+  })
+</script>
+
+<div id="pallete"></div>
+
+</body>
+</html>
